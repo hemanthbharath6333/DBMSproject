@@ -1,0 +1,224 @@
+-- Create tables
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY AUTO_INCREMENT,
+    Username VARCHAR(50) NOT NULL,
+    Password VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) NOT NULL,
+    Phone VARCHAR(20),
+    Address VARCHAR(255)
+);
+
+CREATE TABLE Login (
+    Login_ID INT PRIMARY KEY AUTO_INCREMENT,
+    User_ID INT NOT NULL,
+    Username VARCHAR(50) NOT NULL,
+    Password VARCHAR(50) NOT NULL,
+    FOREIGN KEY (User_ID) REFERENCES Users(UserID)
+);
+
+CREATE TABLE FoodCuisines (
+    CuisineID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Restaurants (
+    RestaurantID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Address VARCHAR(255) NOT NULL,
+    Phone VARCHAR(20),
+    CuisineType VARCHAR(50),
+    FOREIGN KEY (CuisineType) REFERENCES FoodCuisines(Name)
+);
+
+CREATE TABLE Hotels (
+    HotelID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Address VARCHAR(255) NOT NULL,
+    Phone VARCHAR(20),
+    CuisineID INT,
+    FOREIGN KEY (CuisineID) REFERENCES FoodCuisines(CuisineID)
+);
+
+CREATE TABLE MenuItems (
+    ItemID INT PRIMARY KEY AUTO_INCREMENT,
+    RestaurantID INT,
+    Name VARCHAR(100) NOT NULL,
+    Description TEXT,
+    Price DECIMAL(10, 2) NOT NULL,
+    Availability BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurants(RestaurantID)
+);
+
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT,
+    RestaurantID INT,
+    TotalPrice DECIMAL(10, 2) NOT NULL,
+    Status VARCHAR(20) DEFAULT 'pending',
+    Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurants(RestaurantID)
+);
+
+CREATE TABLE OrderItems (
+    OrderItemID INT PRIMARY KEY AUTO_INCREMENT,
+    OrderID INT,
+    ItemID INT,
+    Quantity INT NOT NULL,
+    Subtotal DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (ItemID) REFERENCES MenuItems(ItemID)
+);
+
+CREATE TABLE OrderDeliveries (
+    OrderDeliveryID INT PRIMARY KEY AUTO_INCREMENT,
+    OrderID INT,
+    DeliveryAddress VARCHAR(255) NOT NULL,
+    DeliveryPhone VARCHAR(20),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+);
+
+CREATE TABLE Employees (
+    EmployeeID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) NOT NULL,
+    Phone VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE Payments (
+    PaymentID INT PRIMARY KEY AUTO_INCREMENT,
+    OrderID INT,
+    Amount DECIMAL(10, 2) NOT NULL,
+    PaymentDate DATE,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+);
+
+CREATE TABLE Navigations (
+    NavigationID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT,
+    PageName VARCHAR(100) NOT NULL,
+    Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Insert statements
+-- Insert statements for UserStatus
+INSERT INTO UserStatus VALUES ('alive', 'The User is active in the system');
+INSERT INTO UserStatus VALUES ('dead', 'The User has been deleted from the system');
+
+-- Insert statements for LogType
+INSERT INTO LogType VALUES ('create_staff');
+INSERT INTO LogType VALUES ('create_admin');
+INSERT INTO LogType VALUES ('modifyPassword_admin');
+INSERT INTO LogType VALUES ('modifyPassword_staff');
+INSERT INTO LogType VALUES ('remove_admin');
+INSERT INTO LogType VALUES ('remove_staff');
+
+-- Insert statements for Cuisine
+INSERT INTO FoodCuisines (Name) VALUES 
+('Italian'),
+('Asian'),
+('French'),
+('Indian'),
+('International'),
+('Mexican'),
+('American'),
+('Egyptian'),
+('Lebanese'),
+('British'),
+('Turkish');
+
+-- Insert statements for DeliveryArea
+INSERT INTO DeliveryArea VALUES 
+('6th of October'),
+('New Cairo'),
+('Nasr City'),
+('Heliopolis'),
+('Downtown'),
+('Mohandessin'),
+('Giza'),
+('Zamalek'),
+('Dokki'),
+('Maadi'),
+('Sheraton');
+
+-- Insert statements for MenuType
+INSERT INTO MenuType VALUES 
+('Breakfast'),
+('Lunch'),
+('Dinner'),
+('Dessert');
+
+-- Insert statements for OrderStatus
+INSERT INTO OrderStatus VALUES 
+('Pending'),
+('Received'),
+('Preparing'),
+('Out For Delivery'),
+('Delivered'),
+('Cancelled');
+
+-- Insert statements for ItemConfiguration
+INSERT INTO ItemConfiguration VALUES 
+('Small', 1.0),
+('Regular', 1.1),
+('Large', 1.2),
+('Combo - Small', 1.1),
+('Combo - Regular', 1.17),
+('Combo - Large', 1.25);
+
+-- Insert statements for Users
+INSERT INTO Users (Username, Password, Email, Phone, Address) VALUES 
+('john_doe', 'password123', 'john@example.com', '1234567890', '123 Main St, City');
+
+-- Insert statements for Restaurants
+INSERT INTO Restaurants (Name, Address, Phone, CuisineType) VALUES 
+('Italian Delight', '456 Oak Ave, Town', '0987654321', 'Italian'),
+('Asian Fusion', '789 Elm St, Village', '9876543210', 'Asian'),
+('French Bistro', '321 Maple Ln, Hamlet', '8765432109', 'French');
+
+-- Insert statements for MenuItems
+INSERT INTO MenuItems (RestaurantID, Name, Description, Price, Availability) VALUES 
+(1, 'Spaghetti Carbonara', 'Classic Italian pasta dish with bacon and eggs', 12.99, TRUE),
+(1, 'Margherita Pizza', 'Traditional Italian pizza with tomato, mozzarella, and basil', 10.99, TRUE),
+(2, 'Sushi Combo', 'Assorted sushi rolls with soy sauce and wasabi', 15.99, TRUE),
+(2, 'Pad Thai', 'Thai stir-fried noodles with shrimp, tofu, and peanuts', 14.99, TRUE),
+(3, 'Coq au Vin', 'Classic French dish of chicken braised with wine, mushrooms, and onions', 18.99, TRUE),
+(3, 'Crème Brûlée', 'Traditional French dessert with caramelized sugar on top', 8.99, TRUE);
+
+-- Insert statements for Orders
+INSERT INTO Orders (UserID, RestaurantID, TotalPrice, Status) VALUES 
+(1, 1, 25.98, 'Received'),
+(2, 2, 29.98, 'Received'),
+(3, 3, 27.98, 'Received');
+
+-- Insert statements for OrderItems
+INSERT INTO OrderItems (OrderID, ItemID, Quantity, Subtotal) VALUES 
+(1, 1, 2, 25.98),
+(2, 3, 1, 15.99),
+(2, 4, 1, 14.99),
+(3, 5, 1, 18.99),
+(3, 6, 1, 8.99);
+
+-- Insert statements for OrderDeliveries
+INSERT INTO OrderDeliveries (OrderID, DeliveryAddress, DeliveryPhone) VALUES 
+(1, '123 Oak St, City', '5551234567'),
+(2, '456 Elm St, Village', '5559876543'),
+(3, '789 Maple Ln, Hamlet', '5558765432');
+
+-- Insert statements for Employees
+INSERT INTO Employees (Name, Email, Phone) VALUES 
+('Alice Smith', 'alice@example.com', '1234567890'),
+('Bob Johnson', 'bob@example.com', '9876543210');
+
+-- Insert statements for Payments
+INSERT INTO Payments (OrderID, Amount, PaymentDate) VALUES 
+(1, 25.98, '2024-05-07'),
+(2, 29.98, '2024-05-07'),
+(3, 27.98, '2024-05-07');
+
+-- Insert statements for Navigations
+INSERT INTO Navigations (UserID, PageName) VALUES 
+(1, 'Menu'),
+(2, 'Order History'),
+(3, 'Profile');
